@@ -51,7 +51,7 @@ for col in summary.columns:
     summary[col] = summary[col].apply(format_money)
 
 # Rename index for better readability
-summary.index = ['Расходы', 'Доходы', 'Итого']
+summary.index = ['Доходы', 'Расходы', 'Итого']
 
 # Calculate totals for summary sheet
 total_income = df['income'].sum()
