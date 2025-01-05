@@ -24,16 +24,27 @@ df["income"] = df["income"].apply(parse_money)
 
 # remove #category
 df["categoryName"] = df["categoryName"].str.replace(r", #.*", "", regex=True)
-df["categoryName"] = df["categoryName"].str.replace(
-    r"Дом, квартира / ЖКХ", "Дом, квартира", regex=True
-)
 
 # rename incomin "Другое" to "Другое +"
 df.loc[df["income"] != 0.00, "categoryName"] = df.loc[
     df["income"] != 0.00, "categoryName"
 ].str.replace(r"Другое", "Другое+", regex=True)
 
-# print(df.head(10))
+# rename columns
+df["categoryName"] = df["categoryName"].str.replace(
+    r"Дом, квартира.*", "Дом, квартира", regex=True
+)
+df["categoryName"] = df["categoryName"].str.replace(
+    r"Correction", "Другое+", regex=True
+)
+df["categoryName"] = df["categoryName"].str.replace(
+    r"Инвестиции", "Другое+", regex=True
+)
+df["categoryName"] = df["categoryName"].str.replace(
+    r"Кэшбэк", "Другое+", regex=True
+)
+
+print(df["categoryName"][70:])
 
 # Create summary by category
 summary = pd.pivot_table(
@@ -44,8 +55,6 @@ summary = pd.pivot_table(
     fill_value=0,
 )
 
-
-print(summary.head(10))
 
 # Sort categories by total money movement
 total_movement = summary.sum()
@@ -73,11 +82,15 @@ desired_order = [
     "Другое",
     "Авто",
     "Отпуск",
-    "Крупняк"
-    ]
-df = df[desired_order]
+    "Крупняк",
+]
 
-summary = summary[sorted_categories]
+for col in desired_order:
+    if col not in summary.columns:
+        summary[col] = 0
+
+summary = summary[desired_order]
+# summary = summary[sorted_categories]
 
 # Add total row
 summary.loc["total"] = summary.loc["income"] + summary.loc["outcome"]
@@ -93,6 +106,10 @@ with pd.ExcelWriter("financial_report.xlsx", engine="openpyxl") as writer:
     # Adjust columns width
     for sheet_name in writer.sheets:
         worksheet = writer.sheets[sheet_name]
+        for i in range(3, len(desired_order) * 2, 2):
+            worksheet.insert_cols(idx=i)
+        worksheet.insert_cols(idx=7)
+        worksheet.insert_cols(idx=7)
         for column in worksheet.columns:
             max_length = 0
             column = [cell for cell in column]
