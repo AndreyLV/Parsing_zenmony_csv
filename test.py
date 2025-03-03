@@ -41,7 +41,7 @@ df["categoryName"] = df["categoryName"].str.replace(
     r"Инвестиции", "Другое+", regex=True
 )
 df["categoryName"] = df["categoryName"].str.replace(r"Кэшбэк", "Другое+", regex=True)
-
+df["categoryName"] = df["categoryName"].str.replace(r"Другое, Малыш", "Другое", regex=True)
 
 # Create summary by category
 summary = pd.pivot_table(
@@ -67,6 +67,7 @@ desired_order = [
     "Проезд",
     "Еда на заказ",
     "Здоровье",
+    "Малыш",
     "Дом, квартира",
     "Интернет",
     "Телефон",
