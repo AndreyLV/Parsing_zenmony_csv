@@ -163,5 +163,3 @@ cython_debug/
 *.xlsx
 financial_report.xlsx
 tmp.csv
-tmp.csv
-financial_report.xlsx
